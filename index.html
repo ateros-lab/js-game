@@ -1,6 +1,14 @@
-<div id="canvas" style="
+<div id="canvas" oncontextmenu = "return false;" style="
 	background-color: white;
 ">
+	<div>
+		<img src="assets/2 Background/Day/Background.png" style="
+			position: absolute;
+			left: 0;
+			bottom: 64px;
+			width: 100%;
+		"/>
+	</div>
 	<img src="fullscreen.png" id="fsBtn" style="
 		width: 40px;
 		height: 40px;
@@ -9,18 +17,19 @@
 		right: 20px;
 	" />
 	<div id="img-block" style="
-		width: 288px;
-		height: 288px;
+		width: 96px;
+		height: 96px;
 		overflow: hidden;
-		position: relative;
+		position: absolute;
 		left: 0px;
+		bottom: 64px;
 	">
 		<img id="hero-img" style="
-			width: 1728px;
-			height: 1152px;
+			width: 576px;
+			height: 384px;
 			position: relative;
 			top: 0px;
-			left: -288px;
+			left: -96px;
 			transform: scale(-1,1);
 		" src="hero-sprite.png" />
 	</div>
@@ -128,8 +137,8 @@
 		if (rightPosition > 5) {
 			rightPosition = 0;
 		}
-		heroImg.style.left = `-${rightPosition * 288}px`;
-		heroImg.style.top = '-576px';
+		heroImg.style.left = `-${rightPosition * 96}px`;
+		heroImg.style.top = '-192px';
 		imgBlock.style.left = `${imgBlockPosition * 20}px`;
 	}
 	const leftHandler = () => {
@@ -139,8 +148,8 @@
 		if (rightPosition > 5) {
 			rightPosition = 0;
 		}
-		heroImg.style.left = `-${rightPosition * 288}px`;
-		heroImg.style.top = '-576px';
+		heroImg.style.left = `-${rightPosition * 96}px`;
+		heroImg.style.top = '-192px';
 		imgBlock.style.left = `${imgBlockPosition * 20}px`;
 	}	
 	const standHanlder = () => {
@@ -163,7 +172,7 @@
 		}
 
 		rightPosition = rightPosition + 1;
-		heroImg.style.left = `-${rightPosition * 288}px`;
+		heroImg.style.left = `-${rightPosition * 96}px`;
 		heroImg.style.top = '0px';
 	}
 	const hitHandler = () => {
@@ -188,8 +197,8 @@
 		}
 
 		rightPosition = rightPosition + 1;
-		heroImg.style.left = `-${rightPosition * 288}px`;
-		heroImg.style.top = '-864px';
+		heroImg.style.left = `-${rightPosition * 96}px`;
+		heroImg.style.top = '-288px';
 	}
 	const jumpHandler = () => {
 		switch (direction) {
@@ -213,8 +222,8 @@
 		}
 
 		rightPosition = rightPosition + 1;
-		heroImg.style.left = `-${rightPosition * 288}px`;
-		heroImg.style.top = '-288px';
+		heroImg.style.left = `-${rightPosition * 96}px`;
+		heroImg.style.top = '-96px';
 	}	
 
 	// ОБРАБОТЧИКИ СОБЫТИЙ
@@ -255,8 +264,28 @@
 		}, 150);
 	}
 
+	const addTiles = (i) => {
+		let tile = window.document.createElement('img');
+		let tileBlack = window.document.createElement('img');
+		tile.src = 'assets/1 Tiles/Tile_02.png';
+		tile.style.position = 'absolute';
+		tile.style.left = i*32;
+		tile.style.bottom = 32;
+		tileBlack.src = 'assets/1 Tiles/Tile_04.png';
+		tileBlack.style.position = 'absolute';
+		tileBlack.style.left = i*32;
+		tileBlack.style.bottom = 0;	
+		canvas.appendChild(tile);	
+		canvas.appendChild(tileBlack);
+	}
+
 	const start = () => {
 		lifeCycle();
+		for(let i = 0; i < 50; i = i + 1){
+			addTiles(i);
+		}
 	}
 	start();
+
+
 </script>
