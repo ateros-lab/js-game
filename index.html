@@ -89,6 +89,15 @@
 		"			
 		></div>
 	</div>	
+	<p id="info" style="
+		position: absolute;
+		left: 64px;
+		top: 96px;
+		background-color: black;
+		color: white;
+		font-size: 20pt;
+		padding: 20px;
+	"></p>
 </div>
 <script>
 
@@ -110,6 +119,10 @@
 	let imgBlock = window.document.querySelector('#img-block');
 	let canvas = window.document.querySelector('#canvas');
 	let fsBtn = window.document.querySelector('#fsBtn');
+	let info = window.document.querySelector('#info');
+
+	let heroX = Math.floor((Number.parseInt(imgBlock.style.left)+32)/32);
+	let heroY = Math.floor(Number.parseInt(imgBlock.style.bottom)/32);
 
 	jumpBlock.style.top = `${window.screen.height/2 - 144/2}px`;
 	hitBlock.style.top = `${window.screen.height/2 - 144/2}px`;
@@ -131,6 +144,28 @@
 
 	//ФУНКЦИИ
 
+	const updateHeroXY = () => {
+		heroX = Math.floor((Number.parseInt(imgBlock.style.left)+32)/32);
+		heroY = Math.floor(Number.parseInt(imgBlock.style.bottom)/32);
+
+		info.innerText = `heroX = ${heroX}, heroY = ${heroY}`;
+	}
+
+	const checkFalling = () => {
+		let isFalling = true;
+		for(let i = 0; i < tileArray.length; i++){
+			if ((tileArray[i][0] === heroX) && ((tileArray[i][1]+1) === heroY )) {
+				isFalling = false;
+			}
+		}
+
+		if(isFalling) {
+			info.innerText = info.innerText + ', Falling';
+		} else {
+			info.innerText = info.innerText + ', Not falling';
+		}
+	}
+
 	const rightHandler = () => {
 		heroImg.style.transform = "scale(-1,1)";
 		rightPosition = rightPosition + 1;
@@ -141,6 +176,9 @@
 		heroImg.style.left = `-${rightPosition * 96}px`;
 		heroImg.style.top = '-192px';
 		imgBlock.style.left = `${imgBlockPosition * 20}px`;
+		
+		updateHeroXY();
+		checkFalling();          
 	}
 	const leftHandler = () => {
 		heroImg.style.transform = "scale(1,1)";
@@ -152,6 +190,9 @@
 		heroImg.style.left = `-${rightPosition * 96}px`;
 		heroImg.style.top = '-192px';
 		imgBlock.style.left = `${imgBlockPosition * 20}px`;
+
+		updateHeroXY();
+		checkFalling();                                        
 	}	
 	const standHanlder = () => {
 		switch (direction) {
@@ -272,6 +313,8 @@
 		tile.style.left = x*32;
 		tile.style.bottom = y*32;
 		canvas.appendChild(tile);	
+
+		tileArray.push([x, y]);
 	}
 
 	const createTilesPlatform = (startX, startY, length) => {
@@ -293,6 +336,9 @@
 	const start = () => {
 		lifeCycle();
 		for(let i = 0; i < 50; i = i + 1){
+			if((i > 10) && (i < 17) ){
+				continue;
+			}
 			addTiles(i);
 		}
 
