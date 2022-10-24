@@ -122,6 +122,11 @@
 	let isRightSideBlocked = false;
 	let isLeftSideBlocked = false;
 	let wasHeroHit = false;
+	let f1WallArray = [[-10, 0], [14, 32], [42, 53], [64, 74], [92, 105], [119, 129]];
+	let f2WallArray = [[54, 63]];
+	let isWallRight = false;
+	let isWallLeft = false;
+	let heroStep = 3;
 
 	let jumpBlock = window.document.querySelector('#jump-block');
 	let hitBlock = window.document.querySelector('#hit-block');
@@ -163,6 +168,14 @@
 			elem[0] = elem[0] - 1;
 		});
 		enemiesArray.map(elem => elem.moveLeft());
+		f1WallArray.map(elem => {
+			elem[0] -= 1;
+			elem[1] -= 1;
+		});
+		f2WallArray.map(elem => {
+			elem[0] -= 1;
+			elem[1] -= 1;
+		});		
 	}
 	const moveWorldRight = () => {
 		objectsArray.map((elem, index)=>{
@@ -172,6 +185,14 @@
 			elem[0] = elem[0] + 1;
 		});
 		enemiesArray.map(elem => elem.moveRight());
+		f1WallArray.map(elem => {
+			elem[0] += 1;
+			elem[1] += 1;
+		});
+		f2WallArray.map(elem => {
+			elem[0] += 1;
+			elem[1] += 1;
+		});
 	}
 	const updateHeroXY = () => {
 		heroX = Math.ceil((Number.parseInt(imgBlock.style.left)+32)/32);
@@ -201,8 +222,42 @@
 		imgBlock.style.bottom = `${Number.parseInt(imgBlock.style.bottom)-32}px`;
 		checkFalling();
 	}
+	const checkRightWallCollide = () => {
+		isWallLeft = false;
+		isWallRight = false;
+		if(heroY === 1){
+			f1WallArray.map(elem => {
+				if(heroX === elem[0] - 2){
+					isWallRight = true;
+				}
+			})
+		}else if(heroY === 5){
+			f2WallArray.map(elem => {
+				if(heroX === elem[0] - 2){
+					isWallRight = true;
+				}
+			})
+		}
+	}
+	const checkLeftWallCollide = () => {
+		isWallLeft = false;
+		isWallRight = false;
+		if(heroY === 1){
+			f1WallArray.map(elem => {
+				if(heroX === elem[1]){
+					isWallLeft = true;
+				}
+			})
+		}else if(heroY === 5){
+			f2WallArray.map(elem => {
+				if(heroX === elem[1]){
+					isWallLeft = true;
+				}
+			})
+		}
+	}
 	const rightHandler = () => {
-		if(!isRightSideBlocked){
+		if(!isRightSideBlocked && !isWallRight){
 			heroImg.style.transform = "scale(-1,1)";
 			rightPosition = rightPosition + 1;
 			imgBlockPosition = imgBlockPosition + 1;
@@ -211,15 +266,16 @@
 			}
 			heroImg.style.left = `-${rightPosition * 96}px`;
 			heroImg.style.top = '-192px';
-			imgBlock.style.left = `${imgBlockPosition * 20}px`;
+			imgBlock.style.left = `${imgBlockPosition * heroStep}px`;
 			
 			checkFalling();       
 			wasHeroHit = false; 
-			moveWorldLeft();  
+			moveWorldLeft();
+			checkRightWallCollide();  
 		}
 	}
 	const leftHandler = () => {
-		if(!isLeftSideBlocked){
+		if(!isLeftSideBlocked && !isWallLeft){
 			heroImg.style.transform = "scale(1,1)";
 			rightPosition = rightPosition + 1;
 			imgBlockPosition = imgBlockPosition - 1;
@@ -228,11 +284,12 @@
 			}
 			heroImg.style.left = `-${rightPosition * 96}px`;
 			heroImg.style.top = '-192px';
-			imgBlock.style.left = `${imgBlockPosition * 20}px`;
+			imgBlock.style.left = `${imgBlockPosition * heroStep}px`;
 
 			checkFalling();   
 			wasHeroHit = false;
 			moveWorldRight();
+			checkLeftWallCollide();
 		}										
 	}	
 	const standHanlder = () => {
@@ -288,6 +345,8 @@
 		heroImg.style.top = '-288px';
 	}
 	const jumpHandler = () => {
+		isWallRight = false;
+		isWallLeft = false;
 		switch (direction) {
 			case 'right': {
 				heroImg.style.transform = "scale(-1,1)";		
@@ -295,8 +354,8 @@
 					rightPosition = 1;
 					jump = false;
 					imgBlock.style.bottom = `${Number.parseInt(imgBlock.style.bottom)+160}px`;
-					imgBlockPosition = imgBlockPosition + 10;
-					imgBlock.style.left = `${imgBlockPosition * 20}px`;
+					imgBlockPosition = imgBlockPosition + 15;
+					imgBlock.style.left = `${imgBlockPosition * heroStep}px`;
 				}				
 				break;
 			}
@@ -306,8 +365,8 @@
 					rightPosition = 0;
 					jump = false;
 					imgBlock.style.bottom = `${Number.parseInt(imgBlock.style.bottom)+160}px`;
-					imgBlockPosition = imgBlockPosition - 10;
-					imgBlock.style.left = `${imgBlockPosition * 20}px`;
+					imgBlockPosition = imgBlockPosition - 15;
+					imgBlock.style.left = `${imgBlockPosition * heroStep}px`;
 				}					
 				break;
 			}
@@ -671,7 +730,7 @@
 		let img = window.document.createElement('img');
 		img.src = 'assets/2 Background/Day/Background.png';
 		img.style.position = 'absolute';
-		img.style.left = i*window.screen.width;
+		img.style.left = (i*window.screen.width)-32;
 		img.style.bottom = 32;
 		img.style.width = window.screen.width;
 		backgroundCanvas.appendChild(img);
@@ -737,7 +796,7 @@
 		createTilesPlatform(0, 14, floor1);
 		createTilesPlatform(33, 41, floor1);
 		createTilesPlatform(76, 91, floor1);
-		createTilesPlatform(106, 119, floor1);
+		createTilesPlatform(106, 132, floor1);
 
 		createTilesPlatform(15, 32, floor2);
 		createTilesPlatform(42, 53, floor2);
