@@ -90,6 +90,7 @@
 		></div>
 	</div>	
 	<p id="info" style="
+		display: none;
 		position: absolute;
 		left: 64px;
 		top: 96px;
@@ -108,6 +109,7 @@
 	let direction = 'right';
 	let hit = false;
 	let jump = false;
+	let fall = false;
 	let timer = null;
 	let x = 0;
 	let halfWidth = window.screen.width / 2;
@@ -145,13 +147,13 @@
 	//ФУНКЦИИ
 
 	const updateHeroXY = () => {
-		heroX = Math.floor((Number.parseInt(imgBlock.style.left)+32)/32);
-		heroY = Math.floor(Number.parseInt(imgBlock.style.bottom)/32);
+		heroX = Math.ceil((Number.parseInt(imgBlock.style.left)+32)/32);
+		heroY = Math.ceil(Number.parseInt(imgBlock.style.bottom)/32);
 
 		info.innerText = `heroX = ${heroX}, heroY = ${heroY}`;
 	}
-
 	const checkFalling = () => {
+		updateHeroXY();
 		let isFalling = true;
 		for(let i = 0; i < tileArray.length; i++){
 			if ((tileArray[i][0] === heroX) && ((tileArray[i][1]+1) === heroY )) {
@@ -161,11 +163,17 @@
 
 		if(isFalling) {
 			info.innerText = info.innerText + ', Falling';
+			fall = true;
 		} else {
 			info.innerText = info.innerText + ', Not falling';
+			fall = false;
 		}
 	}
-
+	const fallHandler = () => {
+		heroImg.style.top = '-96px';
+		imgBlock.style.bottom = `${Number.parseInt(imgBlock.style.bottom)-40}px`;
+		checkFalling();
+	}
 	const rightHandler = () => {
 		heroImg.style.transform = "scale(-1,1)";
 		rightPosition = rightPosition + 1;
@@ -177,7 +185,6 @@
 		heroImg.style.top = '-192px';
 		imgBlock.style.left = `${imgBlockPosition * 20}px`;
 		
-		updateHeroXY();
 		checkFalling();          
 	}
 	const leftHandler = () => {
@@ -191,7 +198,6 @@
 		heroImg.style.top = '-192px';
 		imgBlock.style.left = `${imgBlockPosition * 20}px`;
 
-		updateHeroXY();
 		checkFalling();                                        
 	}	
 	const standHanlder = () => {
@@ -216,6 +222,8 @@
 		rightPosition = rightPosition + 1;
 		heroImg.style.left = `-${rightPosition * 96}px`;
 		heroImg.style.top = '0px';
+
+		checkFalling();
 	}
 	const hitHandler = () => {
 		switch (direction) {
@@ -249,6 +257,9 @@
 				if (rightPosition > 4) {
 					rightPosition = 1;
 					jump = false;
+					imgBlock.style.bottom = `${Number.parseInt(imgBlock.style.bottom)+160}px`;
+					imgBlockPosition = imgBlockPosition + 10;
+					imgBlock.style.left = `${imgBlockPosition * 20}px`;
 				}				
 				break;
 			}
@@ -257,6 +268,9 @@
 				if (rightPosition > 3) {
 					rightPosition = 0;
 					jump = false;
+					imgBlock.style.bottom = `${Number.parseInt(imgBlock.style.bottom)+160}px`;
+					imgBlockPosition = imgBlockPosition - 10;
+					imgBlock.style.left = `${imgBlockPosition * 20}px`;
 				}					
 				break;
 			}
@@ -290,7 +304,6 @@
 
 	window.onmousedown = onTouchStart;
 	window.ontouchstart = onTouchStart;
-
 	window.onmouseup = onTouchEnd;
 	window.ontouchend = onTouchEnd;	
 
@@ -300,12 +313,13 @@
 				hitHandler();
 			} else if (jump) {
 				jumpHandler();
+			} else if (fall) {
+				fallHandler(); 
 			} else {
 				standHanlder();
 			}
 		}, 150);
 	}
-
 	const createTile = (x, y = 1) => {
 		let tile = window.document.createElement('img');
 		tile.src = 'assets/1 Tiles/Tile_02.png';
@@ -316,13 +330,11 @@
 
 		tileArray.push([x, y]);
 	}
-
 	const createTilesPlatform = (startX, startY, length) => {
 		for (let i = 0; i < length; i++) {
 			createTile(startX+i, startY);
 		}
 	}
-
 	const addTiles = (i) => {
 		createTile(i);
 		let tileBlack = window.document.createElement('img');
@@ -332,7 +344,6 @@
 		tileBlack.style.bottom = 0;	
 		canvas.appendChild(tileBlack);
 	}
-
 	const start = () => {
 		lifeCycle();
 		for(let i = 0; i < 50; i = i + 1){
@@ -348,6 +359,4 @@
 
 	}
 	start();
-
-
 </script>
