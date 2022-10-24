@@ -198,7 +198,8 @@
 			heroImg.style.top = '-192px';
 			imgBlock.style.left = `${imgBlockPosition * 20}px`;
 			
-			checkFalling();          
+			checkFalling();       
+			wasHeroHit = false;   
 		}
 	}
 	const leftHandler = () => {
@@ -214,6 +215,7 @@
 			imgBlock.style.left = `${imgBlockPosition * 20}px`;
 
 			checkFalling();   
+			wasHeroHit = false;
 		}										
 	}	
 	const standHanlder = () => {
@@ -373,6 +375,7 @@
 
 		state;
 		animateWasChanged;
+		lives;
 
 		startX;
 		posX;
@@ -397,6 +400,7 @@
 			this.sourcePath = 'assets/Enemies/1/';
 			this.dir = 1;
 			this.stop = false;
+			this.lives = 30;
 
 			this.state = this.IDLE;
 			this.animateWasChanged = false;
@@ -462,14 +466,11 @@
 				if(!this.stop){
 					this.move();
 				} else {
-					if(this.state != this.HURT){
-						this.changeAnimate(this.ATTACK);
+					if(this.state != this.DEATH){
+						if(this.state != this.HURT){
+							this.changeAnimate(this.ATTACK);
+						}
 					}
-				}
-				if(wasHeroHit){
-					wasHeroHit = false;
-					this.changeAnimate(this.HURT);
-					this.showHurt();
 				}
 				this.animate();
 			}, 150);
@@ -483,6 +484,11 @@
 				}
 				if(this.state === this.HURT){
 					this.changeAnimate(this.ATTACK);
+				}
+				if(this.state === this.DEATH){
+					clearInterval(this.timer);
+					isRightSideBlocked = false;
+					isLeftSideBlocked = false;
 				}
 			}
 			this.img.style.left = -(this.spritePos * this.blockSize);
@@ -522,14 +528,29 @@
 			this.posX += this.dir;
 			this.block.style.left = this.posX * 32;
 		}
+		checkHurt(){
+			if(wasHeroHit){
+				if(this.lives <= 10){
+					wasHeroHit = false;
+					this.changeAnimate(this.DEATH);
+				} else {
+					wasHeroHit = false;
+					this.changeAnimate(this.HURT);
+					this.showHurt();
+					this.lives -= 10;
+				}
+			}
+		}
 		checkCollide(){
 			if(heroY == this.posY){
 				if(heroX == this.posX){
 					// attack left side
+					this.checkHurt();
 					isRightSideBlocked = true;
 					this.stop = true;
 				} else if(heroX == (this.posX + 3)){
 					// attack right side
+					this.checkHurt();
 					isLeftSideBlocked = true;
 					this.stop = true;
 				} else {
@@ -550,7 +571,7 @@
 			let text = window.document.createElement('p');
 			text.innerText = '-10';
 			text.style.position = 'absolute';
-			text.style.left = Number.parseInt(this.block.style.left) + 50;
+			text.style.left = (this.dir < 0) ? Number.parseInt(this.block.style.left) + 50 : Number.parseInt(this.block.style.left) + 10;
 			text.style.bottom = Number.parseInt(this.block.style.bottom) + 32;
 			text.style.fontFamily = "'Bungee Spice', cursive";
 			let hurtTimer = setInterval(()=>{
