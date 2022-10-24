@@ -100,6 +100,11 @@
 		padding: 20px;
 	"></p>
 </div>
+
+<style>
+	@import url('https://fonts.googleapis.com/css2?family=Bungee+Spice&display=swap');
+</style>
+
 <script>
 
 	//ПЕРЕМЕННЫЕ
@@ -117,6 +122,9 @@
 	let maxLives = 6;
 	let lives = 6;
 	let heartsArray = [];
+	let isRightSideBlocked = false;
+	let isLeftSideBlocked = false;
+	let wasHeroHit = false;
 
 	let jumpBlock = window.document.querySelector('#jump-block');
 	let hitBlock = window.document.querySelector('#hit-block');
@@ -179,30 +187,34 @@
 		checkFalling();
 	}
 	const rightHandler = () => {
-		heroImg.style.transform = "scale(-1,1)";
-		rightPosition = rightPosition + 1;
-		imgBlockPosition = imgBlockPosition + 1;
-		if (rightPosition > 5) {
-			rightPosition = 0;
+		if(!isRightSideBlocked){
+			heroImg.style.transform = "scale(-1,1)";
+			rightPosition = rightPosition + 1;
+			imgBlockPosition = imgBlockPosition + 1;
+			if (rightPosition > 5) {
+				rightPosition = 0;
+			}
+			heroImg.style.left = `-${rightPosition * 96}px`;
+			heroImg.style.top = '-192px';
+			imgBlock.style.left = `${imgBlockPosition * 20}px`;
+			
+			checkFalling();          
 		}
-		heroImg.style.left = `-${rightPosition * 96}px`;
-		heroImg.style.top = '-192px';
-		imgBlock.style.left = `${imgBlockPosition * 20}px`;
-		
-		checkFalling();          
 	}
 	const leftHandler = () => {
-		heroImg.style.transform = "scale(1,1)";
-		rightPosition = rightPosition + 1;
-		imgBlockPosition = imgBlockPosition - 1;
-		if (rightPosition > 5) {
-			rightPosition = 0;
-		}
-		heroImg.style.left = `-${rightPosition * 96}px`;
-		heroImg.style.top = '-192px';
-		imgBlock.style.left = `${imgBlockPosition * 20}px`;
+		if(!isLeftSideBlocked){
+			heroImg.style.transform = "scale(1,1)";
+			rightPosition = rightPosition + 1;
+			imgBlockPosition = imgBlockPosition - 1;
+			if (rightPosition > 5) {
+				rightPosition = 0;
+			}
+			heroImg.style.left = `-${rightPosition * 96}px`;
+			heroImg.style.top = '-192px';
+			imgBlock.style.left = `${imgBlockPosition * 20}px`;
 
-		checkFalling();                                        
+			checkFalling();   
+		}										
 	}	
 	const standHanlder = () => {
 		switch (direction) {
@@ -236,6 +248,7 @@
 				if (rightPosition > 4) {
 					rightPosition = 1;
 					hit = false;
+					wasHeroHit = true;
 				}				
 				break;
 			}
@@ -244,6 +257,7 @@
 				if (rightPosition > 3) {
 					rightPosition = 0;
 					hit = false;
+					wasHeroHit = true;
 				}					
 				break;
 			}
@@ -452,6 +466,11 @@
 						this.changeAnimate(this.ATTACK);
 					}
 				}
+				if(wasHeroHit){
+					wasHeroHit = false;
+					this.changeAnimate(this.HURT);
+					this.showHurt();
+				}
 				this.animate();
 			}, 150);
 		}
@@ -507,27 +526,44 @@
 			if(heroY == this.posY){
 				if(heroX == this.posX){
 					// attack left side
-					if(hit){
-						this.changeAnimate(this.HURT);
-					}
+					isRightSideBlocked = true;
 					this.stop = true;
-				} else if(heroX == (this.posX + 2)){
+				} else if(heroX == (this.posX + 3)){
 					// attack right side
-					if(hit){
-						this.changeAnimate(this.HURT);
-					}
+					isLeftSideBlocked = true;
 					this.stop = true;
 				} else {
+					isRightSideBlocked = false;
+					isLeftSideBlocked = false;
 					this.stop = false;
 					this.changeAnimate(this.WALK);
 				}
 			} else {
+				isRightSideBlocked = false;
+				isLeftSideBlocked = false;
 				this.stop = false;
 				this.changeAnimate(this.WALK);
 			}
 		}
+		showHurt(){
+			let pos = 0;
+			let text = window.document.createElement('p');
+			text.innerText = '-10';
+			text.style.position = 'absolute';
+			text.style.left = Number.parseInt(this.block.style.left) + 50;
+			text.style.bottom = Number.parseInt(this.block.style.bottom) + 32;
+			text.style.fontFamily = "'Bungee Spice', cursive";
+			let hurtTimer = setInterval(()=>{
+				text.style.bottom = Number.parseInt(text.style.bottom) + 16;
+				if(pos > 2){
+					clearInterval(hurtTimer);
+					text.style.display = 'none';
+				}
+				pos++;
+			}, 100);
+			canvas.appendChild(text);
+		}
 	}
-
 	class Heart {
 		img;
 		x;
@@ -544,19 +580,16 @@
 			canvas.appendChild(this.img);
 		}
 	}
-
 	class HeartEmpty extends Heart {
 		constructor(x){
 			super(x, 'assets/Hearts/heart_empty.png');
 		}
 	}
-
 	class HeartRed extends Heart {
 		constructor(x){
 			super(x, 'assets/Hearts/heart_red.png');
 		}
 	}
-
 	const addHearts = () => {
 		for(let i = 0; i < maxLives; i++){
 			let heartEmpty = new HeartEmpty(i);
@@ -564,7 +597,6 @@
 			heartsArray.push(heartRed);
 		}
 	}
-
 	const updateHearts = () => {
 		if(lives < 1){
 			lives = 1;
@@ -576,7 +608,6 @@
 			heartsArray[i].img.style.display = 'none';
 		}
 	}
-
 	const start = () => {
 		lifeCycle();
 		for(let i = 0; i < 50; i = i + 1){
