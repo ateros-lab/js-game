@@ -1,7 +1,7 @@
 <div id="canvas" oncontextmenu = "return false;" style="
 	background-color: white;
 ">
-	<div>
+	<div id="background-canvas">
 		<img src="assets/2 Background/Day/Background.png" style="
 			position: absolute;
 			left: 0;
@@ -125,6 +125,7 @@
 	let canvas = window.document.querySelector('#canvas');
 	let fsBtn = window.document.querySelector('#fsBtn');
 	let info = window.document.querySelector('#info');
+	let backgroundCanvas = window.document.querySelector('#background-canvas');
 
 	let heroX = Math.floor((Number.parseInt(imgBlock.style.left)+32)/32);
 	let heroY = Math.floor(Number.parseInt(imgBlock.style.bottom)/32);
@@ -174,7 +175,7 @@
 	}
 	const fallHandler = () => {
 		heroImg.style.top = '-96px';
-		imgBlock.style.bottom = `${Number.parseInt(imgBlock.style.bottom)-40}px`;
+		imgBlock.style.bottom = `${Number.parseInt(imgBlock.style.bottom)-32}px`;
 		checkFalling();
 	}
 	const rightHandler = () => {
@@ -329,7 +330,7 @@
 		tile.style.position = 'absolute';
 		tile.style.left = x*32;
 		tile.style.bottom = y*32;
-		canvas.appendChild(tile);	
+		backgroundCanvas.appendChild(tile);	
 
 		tileArray.push([x, y]);
 	}
@@ -345,7 +346,7 @@
 		tileBlack.style.position = 'absolute';
 		tileBlack.style.left = i*32;
 		tileBlack.style.bottom = 0;	
-		canvas.appendChild(tileBlack);
+		backgroundCanvas.appendChild(tileBlack);
 	}
 
 	class Enemy {
@@ -447,7 +448,9 @@
 				if(!this.stop){
 					this.move();
 				} else {
-					this.changeAnimate(this.ATTACK);
+					if(this.state != this.HURT){
+						this.changeAnimate(this.ATTACK);
+					}
 				}
 				this.animate();
 			}, 150);
@@ -458,6 +461,9 @@
 				if(this.state === this.ATTACK){
 					lives--;
 					updateHearts();
+				}
+				if(this.state === this.HURT){
+					this.changeAnimate(this.ATTACK);
 				}
 			}
 			this.img.style.left = -(this.spritePos * this.blockSize);
@@ -501,9 +507,15 @@
 			if(heroY == this.posY){
 				if(heroX == this.posX){
 					// attack left side
+					if(hit){
+						this.changeAnimate(this.HURT);
+					}
 					this.stop = true;
 				} else if(heroX == (this.posX + 2)){
 					// attack right side
+					if(hit){
+						this.changeAnimate(this.HURT);
+					}
 					this.stop = true;
 				} else {
 					this.stop = false;
