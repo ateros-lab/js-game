@@ -477,14 +477,14 @@
 		stop;
 
 		sourcePath;
-		constructor(x, y){
-			this.posX = x;
-			this.startX = this.posX;
+		constructor(x, y, src){
+			this.posX = x + this.getRandomOffset(6);
+			this.startX = x;
 			this.posY = y;
 			this.blockSize = 96;
 			this.spritePos = 0;
 			this.spriteMaxPos = 3;
-			this.sourcePath = 'assets/Enemies/1/';
+			this.sourcePath = src;
 			this.dir = 1;
 			this.stop = false;
 			this.lives = 30;
@@ -607,7 +607,7 @@
 			this.animateWasChanged = true;
 		}
 		move(){
-			if(this.posX > (this.startX + 10)){
+			if(this.posX > (this.startX + 6)){
 				this.dir *= -1;
 				this.img.style.transform = "scale(-1,1)";
 			} else if(this.posX <= this.startX){
@@ -676,12 +676,78 @@
 		moveRight(){
 			this.startX += 1;
 			this.posX += 1;
+			if(this.stop || this.state === this.DEATH){
+				this.block.style.left = Number.parseInt(this.block.style.left)+32;
+			}
 		}
 		moveLeft(){
 			this.startX -= 1;
 			this.posX -= 1;
+			if(this.stop || this.state === this.DEATH){
+				this.block.style.left = Number.parseInt(this.block.style.left)-32;
+			}			
+		}
+		getRandomOffset(max){
+			let rand = Math.floor(Math.random() * max);
+			return rand;
 		}
 	}
+	class Enemy1 extends Enemy {
+		constructor(x, y){
+			super(x, y, 'assets/Enemies/1/');
+		}
+	}
+	class Enemy2 extends Enemy {
+		constructor(x, y){
+			super(x, y, 'assets/Enemies/2/');
+		}
+		setAttack(){
+			this.img.src = this.sourcePath + 'Attack.png';
+			this.spriteMaxPos = 5;
+		}
+		setDeath(){
+			this.img.src = this.sourcePath + 'Death.png';
+			this.spriteMaxPos = 5;
+		}
+		setWalk(){
+			this.img.src = this.sourcePath + 'Walk.png';
+			this.spriteMaxPos = 3;
+		}					
+	}
+	class Enemy5 extends Enemy {
+		constructor(x, y){
+			super(x, y, 'assets/Enemies/5/');
+		}
+		setAttack(){
+			this.img.src = this.sourcePath + 'Attack.png';
+			this.spriteMaxPos = 3;
+		}
+		setDeath(){
+			this.img.src = this.sourcePath + 'Death.png';
+			this.spriteMaxPos = 2;
+		}
+		setWalk(){
+			this.img.src = this.sourcePath + 'Walk.png';
+			this.spriteMaxPos = 3;
+		}		
+	}		
+	class Enemy6 extends Enemy {
+		constructor(x, y){
+			super(x, y, 'assets/Enemies/6/');
+		}
+		setAttack(){
+			this.img.src = this.sourcePath + 'Attack.png';
+			this.spriteMaxPos = 3;
+		}
+		setDeath(){
+			this.img.src = this.sourcePath + 'Death.png';
+			this.spriteMaxPos = 2;
+		}
+		setWalk(){
+			this.img.src = this.sourcePath + 'Walk.png';
+			this.spriteMaxPos = 3;
+		}		
+	}	
 	class Heart {
 		img;
 		x;
@@ -786,6 +852,15 @@
 		createImgEl(basePath + '/Other/Box.png', 14, f3);
 		createImgEl(basePath + '/Other/Box.png', 104, f3);
 	}
+	const addEnemies = () => {
+		let enemy1 = new Enemy1(9, 9);
+		let enemy2 = new Enemy6(19, 5);
+		let enemy3 = new Enemy5(44, 5);
+		let enemy4 = new Enemy2(65, 5);
+		let enemy5 = new Enemy1(79, 1);
+		let enemy6 = new Enemy6(93, 5);
+		let enemy7 = new Enemy2(100, 9);
+	}
 	const buildLevel = () => {
 		let floor1 = 0;
 		let floor2 = 4;
@@ -814,6 +889,8 @@
 		createTilesBlackBlock(92, 105, floor2);
 
 		createTilesBlackBlock(54, 63, floor3);
+
+		addEnemies();
 	}
 	const start = () => {
 		addBackgroundImages();
@@ -821,6 +898,7 @@
 		lifeCycle();
 		addHearts();
 		updateHearts();
+		let enemy10 = new Enemy2(5,1);
 	}
 	start();
 </script>
