@@ -2,12 +2,7 @@
 	background-color: white;
 ">
 	<div id="background-canvas">
-		<img src="assets/2 Background/Day/Background.png" style="
-			position: absolute;
-			left: 0;
-			bottom: 64px;
-			width: 100%;
-		"/>
+
 	</div>
 	<img src="fullscreen.png" id="fsBtn" style="
 		width: 40px;
@@ -381,9 +376,16 @@
 		backgroundCanvas.appendChild(tileBlack);
 		objectsArray.push(tileBlack);
 	}
-	const createTilesPlatform = (startX, startY, length) => {
-		for (let i = 0; i < length; i++) {
-			createTile(startX+i, startY);
+	const createTilesPlatform = (startX, endX, floor) => {
+		for (let x_pos = startX - 1 ; x_pos < endX; x_pos++) {
+			createTile(x_pos, floor);
+		}
+	}
+	const createTilesBlackBlock = (startX, endX, floor) => {
+		for (let y_pos = 0; y_pos < floor; y_pos++){
+			for (let x_pos = startX - 1 ; x_pos < endX; x_pos++) {
+				createTileBlack(x_pos, y_pos);
+			}
 		}
 	}
 	const addTiles = (i) => {
@@ -665,19 +667,52 @@
 			heartsArray[i].img.style.display = 'none';
 		}
 	}
-	const start = () => {
-		lifeCycle();
-		for(let i = 0; i < 50; i = i + 1){
-			// if((i > 10) && (i < 17) ){
-			// 	continue;
-			// }
-			addTiles(i);
+	const createBackImg = (i) => {
+		let img = window.document.createElement('img');
+		img.src = 'assets/2 Background/Day/Background.png';
+		img.style.position = 'absolute';
+		img.style.left = i*window.screen.width;
+		img.style.bottom = 32;
+		img.style.width = window.screen.width;
+		backgroundCanvas.appendChild(img);
+		objectsArray.push(img);
+	}
+	const addBackgroundImages = () => {
+		for(let i = 0; i < 5; i++){
+			createBackImg(i);
 		}
-		createTilesPlatform(10, 10, 10);
-		createTilesPlatform(15, 5, 10);
+	}
+	const buildLevel = () => {
+		let floor1 = 0;
+		let floor2 = 4;
+		let floor3 = 8;
 
-		let enemy = new Enemy(10, 2);
+		createTilesPlatform(0, 14, floor1);
+		createTilesPlatform(33, 41, floor1);
+		createTilesPlatform(76, 91, floor1);
+		createTilesPlatform(106, 119, floor1);
 
+		createTilesPlatform(15, 32, floor2);
+		createTilesPlatform(42, 53, floor2);
+		createTilesPlatform(64, 75, floor2);
+		createTilesPlatform(92, 105, floor2);
+
+		createTilesPlatform(8, 20, floor3);
+		createTilesPlatform(54, 63, floor3);
+		createTilesPlatform(75, 87, floor3);
+		createTilesPlatform(99, 111, floor3);
+
+		createTilesBlackBlock(15, 32, floor2);
+		createTilesBlackBlock(42, 53, floor2);
+		createTilesBlackBlock(64, 75, floor2);
+		createTilesBlackBlock(92, 105, floor2);
+
+		createTilesBlackBlock(54, 63, floor3);
+	}
+	const start = () => {
+		addBackgroundImages();
+		buildLevel();
+		lifeCycle();
 		addHearts();
 		updateHearts();
 	}
