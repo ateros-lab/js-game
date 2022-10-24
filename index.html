@@ -24,17 +24,89 @@
 			transform: scale(-1,1);
 		" src="hero-sprite.png" />
 	</div>
+	<div id="jump-block" style="
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 144px;
+		height: 144px;
+		overflow: hidden;
+		opacity: 0.5;
+	">
+		<img src="hero-sprite.png" style="
+			position: absolute;
+			top: -144px;
+			left: -144px;
+			width: 864px;
+			height: 576px;
+			transform: scale(-1,1);
+		" />
+		<div style="
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 140px;
+			height: 140px;
+			border: 2px solid rgb(0, 119, 255);
+			border-radius: 50%;
+		"			
+		></div>
+	</div>
+	<div id="hit-block" style="
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: 144px;
+		height: 144px;
+		overflow: hidden;
+		opacity: 0.5;
+	">
+		<img src="hero-sprite.png" style="
+			position: absolute;
+			top: -452px;
+			left: -442px;
+			width: 864px;
+			height: 576px;
+			transform: scale(-1,1);
+		" />
+		<div style="
+			position: absolute;
+			top: 0;
+			right: 0;
+			width: 140px;
+			height: 140px;
+			border: 2px solid rgb(0, 119, 255);
+			border-radius: 50%;
+		"			
+		></div>
+	</div>	
 </div>
 <script>
-	// -576px
+
 	//ПЕРЕМЕННЫЕ
+	
+	let rightPosition = 0;
+	let imgBlockPosition = 0;
+	let direction = 'right';
+	let hit = false;
+	let jump = false;
+	let timer = null;
+	let x = 0;
+	let halfWidth = window.screen.width / 2;
+
+	let jumpBlock = window.document.querySelector('#jump-block');
+	let hitBlock = window.document.querySelector('#hit-block');
 	let heroImg = window.document.querySelector('#hero-img');
-	heroImg.onclick = (event) => {
-		event.preventDefault();
-	}
 	let imgBlock = window.document.querySelector('#img-block');
 	let canvas = window.document.querySelector('#canvas');
 	let fsBtn = window.document.querySelector('#fsBtn');
+
+	jumpBlock.style.top = `${window.screen.height/2 - 144/2}px`;
+	hitBlock.style.top = `${window.screen.height/2 - 144/2}px`;
+
+	heroImg.onclick = (event) => {
+		event.preventDefault();
+	}
 	fsBtn.onclick = () => {
 		if(window.document.fullscreen){
 			fsBtn.src = 'fullscreen.png';
@@ -44,10 +116,11 @@
 			canvas.requestFullscreen();
 		}
 	}
-	let rightPosition = 0;
-	let imgBlockPosition = 0;
-	let direction = 'right';
+	jumpBlock.onclick = () => {jump = true};
+	hitBlock.onclick = () => {hit = true};
+
 	//ФУНКЦИИ
+
 	const rightHandler = () => {
 		heroImg.style.transform = "scale(-1,1)";
 		rightPosition = rightPosition + 1;
@@ -93,16 +166,59 @@
 		heroImg.style.left = `-${rightPosition * 288}px`;
 		heroImg.style.top = '0px';
 	}
+	const hitHandler = () => {
+		switch (direction) {
+			case 'right': {
+				heroImg.style.transform = "scale(-1,1)";		
+				if (rightPosition > 4) {
+					rightPosition = 1;
+					hit = false;
+				}				
+				break;
+			}
+			case 'left': {
+				heroImg.style.transform = "scale(1,1)";		
+				if (rightPosition > 3) {
+					rightPosition = 0;
+					hit = false;
+				}					
+				break;
+			}
+			default: break;
+		}
+
+		rightPosition = rightPosition + 1;
+		heroImg.style.left = `-${rightPosition * 288}px`;
+		heroImg.style.top = '-864px';
+	}
+	const jumpHandler = () => {
+		switch (direction) {
+			case 'right': {
+				heroImg.style.transform = "scale(-1,1)";		
+				if (rightPosition > 4) {
+					rightPosition = 1;
+					jump = false;
+				}				
+				break;
+			}
+			case 'left': {
+				heroImg.style.transform = "scale(1,1)";		
+				if (rightPosition > 3) {
+					rightPosition = 0;
+					jump = false;
+				}					
+				break;
+			}
+			default: break;
+		}
+
+		rightPosition = rightPosition + 1;
+		heroImg.style.left = `-${rightPosition * 288}px`;
+		heroImg.style.top = '-288px';
+	}	
 
 	// ОБРАБОТЧИКИ СОБЫТИЙ
-	let timer = null;
-	const lifeCycle = () => {
-		timer = setInterval(()=>{
-			standHanlder();
-		}, 150);
-	}
-	let x = 0;
-	let halfWidth = window.screen.width / 2;
+
 	let onTouchStart = (event) => {
 		clearInterval(timer);
 		x = (event.type === 'mousedown') ? event.screenX : event.touches[0].screenX;
@@ -126,6 +242,18 @@
 
 	window.onmouseup = onTouchEnd;
 	window.ontouchend = onTouchEnd;	
+
+	const lifeCycle = () => {
+		timer = setInterval(()=>{
+			if (hit) {
+				hitHandler();
+			} else if (jump) {
+				jumpHandler();
+			} else {
+				standHanlder();
+			}
+		}, 150);
+	}
 
 	const start = () => {
 		lifeCycle();
