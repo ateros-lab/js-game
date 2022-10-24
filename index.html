@@ -1,0 +1,63 @@
+<button id="right" style="
+  font-size: 60pt;
+  padding: 30pt;
+">Right</button>
+<!--<p id="hero" style="
+    background-color: blue;
+    font-size: 25pt;
+    padding: 20pt;
+    width: 30%;
+    text-align: center;
+    position: relative;
+    left: 0px;
+">Text</p>-->
+<div id="img-block" style="
+	width: 288px;
+	height: 288px;
+	overflow: hidden;
+	position: relative;
+	left: 0px;
+">
+	<img id="hero-img" style="
+		width: 1728px;
+		height: 1152px;
+		position: relative;
+		top: -576px;
+		left: 0px;
+		transform: scale(-1,1);
+	" src="hero-sprite.png" />
+</div>
+
+<script>
+	//ПЕРЕМЕННЫЕ
+	let heroImg = window.document.querySelector('#hero-img');
+	let rightButton = window.document.querySelector('#right');
+	let imgBlock = window.document.querySelector('#img-block');
+	let rightPosition = 0;
+	let imgBlockPosition = 0;
+	//ФУНКЦИИ
+	const rightHandler = () => {
+		rightPosition = rightPosition + 1;
+		imgBlockPosition = imgBlockPosition + 1;
+		if(rightPosition > 5) {
+			rightPosition = 0;
+		}
+		heroImg.style.left = `-${rightPosition*288}px`;
+		imgBlock.style.left = `${imgBlockPosition*20}px`;
+		// hero.style.left = `${rightPosition}px`;
+	}
+	// ОБРАБОТЧИКИ СОБЫТИЙ
+	rightButton.onclick = rightHandler;
+
+
+
+
+    // const clickHandler = () =>{
+    //     if (hero.style.backgroundColor === 'grey') {
+    //         hero.style.backgroundColor = 'blue';
+    //     } else {
+    //         hero.style.backgroundColor = 'grey';
+    //     }
+    // }
+    // hero.onclick = clickHandler;
+</script>
