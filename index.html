@@ -577,7 +577,9 @@
 		stop;
 
 		sourcePath;
-		constructor(x, y, src){
+		message;
+		constructor(x, y, src, message = ''){
+			this.message = message;
 			this.posX = x + this.getRandomOffset(6);
 			this.startX = x;
 			this.posY = y;
@@ -678,6 +680,7 @@
 					isRightSideBlocked = false;
 					isLeftSideBlocked = false;
 					if(this.dir > 0) this.spritePos = 5;
+					if(this.message) new Cutscene([this.message]);
 				}
 			}
 			this.img.style.left = -(this.spritePos * this.blockSize);
@@ -793,13 +796,13 @@
 		}
 	}
 	class Enemy1 extends Enemy {
-		constructor(x, y){
-			super(x, y, 'assets/Enemies/1/');
+		constructor(x, y, mess){
+			super(x, y, 'assets/Enemies/1/', mess);
 		}
 	}
 	class Enemy2 extends Enemy {
-		constructor(x, y){
-			super(x, y, 'assets/Enemies/2/');
+		constructor(x, y, mess){
+			super(x, y, 'assets/Enemies/2/', mess);
 		}
 		setAttack(){
 			this.img.src = this.sourcePath + 'Attack.png';
@@ -815,8 +818,8 @@
 		}					
 	}
 	class Enemy5 extends Enemy {
-		constructor(x, y){
-			super(x, y, 'assets/Enemies/5/');
+		constructor(x, y, mess){
+			super(x, y, 'assets/Enemies/5/', mess);
 		}
 		setAttack(){
 			this.img.src = this.sourcePath + 'Attack.png';
@@ -835,8 +838,8 @@
 		bullet;
 		isShoot;
 		bulletX;
-		constructor(x, y){
-			super(x, y, 'assets/Enemies/6/');
+		constructor(x, y, mess){
+			super(x, y, 'assets/Enemies/6/', mess);
 			this.bullet = window.document.createElement('img');
 			this.bullet.src = this.sourcePath + 'Ball1.png';
 			this.bullet.style.position = 'absolute';
@@ -906,6 +909,7 @@
 					isRightSideBlocked = false;
 					isLeftSideBlocked = false;
 					if(this.dir > 0) this.spritePos = 5;
+					if(this.message) new Cutscene([this.message]);
 				}
 			}
 			if(this.isShoot && this.state === this.ATTACK){
@@ -1047,13 +1051,13 @@
 		createImgEl(basePath + '/Other/Box.png', 104, f3);
 	}
 	const addEnemies = () => {
-		let enemy1 = new Enemy1(9, 9);
+		let enemy1 = new Enemy1(9, 9, 'Стала известна первая цифра пароля - "1"');
 		let enemy2 = new Enemy6(19, 5);
-		let enemy3 = new Enemy5(44, 5);
+		let enemy3 = new Enemy5(44, 5, 'Вторая цифра пароля - это "1"');
 		let enemy4 = new Enemy2(65, 5);
-		let enemy5 = new Enemy1(79, 1);
+		let enemy5 = new Enemy1(79, 1, 'Третья цифра пароля - "2"');
 		let enemy6 = new Enemy6(93, 5);
-		let enemy7 = new Enemy2(100, 9);
+		let enemy7 = new Enemy2(100, 9, 'Последняя цифра пароля - "3".\n\nСкорее ищи рычаг, у тебя 15 секунд!');
 	}
 	const buildLevel = () => {
 		let floor1 = 0;
@@ -1092,11 +1096,11 @@
 		lifeCycle();
 		addHearts();
 		updateHearts();
-		let cutscene = new Cutscene([
-			'После неудачной попытки выследить похитетелей своей девушки, Адам был пойман недображелателями.\n\nОни решили протестировать на герое недавно украденную сверхсекретную разработку. В результате - сознание Адама было заключено в виртуальный плен.\n\nВсе это время друзья героя искали его и спустя несколько дней, наконец-то смогли выйти с ним на связь.',
-			'Оказалось, что из виртуального мира можно сбежать - дверь находиться за одним из фонтанов в конце первого уровня. Но, чтобы ее открыть нужно найти спрятанный рычаг и ввести код пароля. \n\nПароль состоит из 4 чисел. Цифры пароля находятся внутри тщательно охраняемых деревянных ящиков (по одной в каждом).\n\nЧто касается рычага - он спрятан на втором уровне, куда у Адама нет доступа.',
-			'К счастью друзья нашли способ похитить его. Но, поскольку опасность слышком велика, они передадут рычаг, только когда станут известны все цифры пароля.\n\nКогда появится рычаг у Адама будет 15 секунд чтобы найти его, подбежать к фонтану и ввести пароль. Если герой не успеет - местонохождение его друзей будет обнаружено недоброжелателями.',
-		]);
+		// let cutscene = new Cutscene([
+		// 	'После неудачной попытки выследить похитетелей своей девушки, Адам был пойман недображелателями.\n\nОни решили протестировать на герое недавно украденную сверхсекретную разработку. В результате - сознание Адама было заключено в виртуальный плен.\n\nВсе это время друзья героя искали его и спустя несколько дней, наконец-то смогли выйти с ним на связь.',
+		// 	'Оказалось, что из виртуального мира можно сбежать - дверь находиться за одним из фонтанов в конце первого уровня. Но, чтобы ее открыть нужно найти спрятанный рычаг и ввести код пароля. \n\nПароль состоит из 4 чисел. Цифры пароля находятся внутри тщательно охраняемых деревянных ящиков (по одной в каждом).\n\nЧто касается рычага - он спрятан на втором уровне, куда у Адама нет доступа.',
+		// 	'К счастью друзья нашли способ похитить его. Но, поскольку опасность слышком велика, они передадут рычаг, только когда станут известны все цифры пароля.\n\nКогда появится рычаг у Адама будет 15 секунд чтобы найти его, подбежать к фонтану и ввести пароль. Если герой не успеет - местонохождение его друзей будет обнаружено недоброжелателями.',
+		// ]);
 	}
 	start();
 </script>
