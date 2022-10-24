@@ -98,6 +98,7 @@
 
 <style>
 	@import url('https://fonts.googleapis.com/css2?family=Bungee+Spice&display=swap');
+	@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 </style>
 
 <script>
@@ -452,6 +453,76 @@
 		createTileBlack(i);
 	}
 	
+	class Cutscene {
+		text;
+		block;
+		p;
+		nextButton;
+		skipButton;
+		constructor(text){
+			this.text = text;
+			this.block = window.document.createElement('div');
+			this.block.style.position = 'absolute';
+			this.block.style.left = '10%';
+			this.block.style.bottom = '10vh';
+			this.block.style.width = '80%';
+			this.block.style.height = '80vh';
+			//#38002c - фон
+			//#8babbf - текст
+			this.block.style.backgroundColor = '#38002c';
+			this.block.style.border = '5px solid #8babbf';
+			this.appendP();
+			this.appendNextButton();
+			this.appendSkipButton();
+			this.setText(this.text);
+			canvas.appendChild(this.block);
+		}
+		appendP(){
+			this.p = window.document.createElement('p');
+			this.p.style.position = 'absolute';
+			this.p.style.left = '10%';
+			this.p.style.top = '4vh';
+			this.p.style.width = '80%';
+			this.p.style.color = '#8babbf';
+			this.p.style.fontSize = '8pt';
+			this.p.style.lineHeight = '1.5';
+			this.p.style.fontFamily = "'Press Start 2P', cursive";
+			this.block.appendChild(this.p);
+		}
+		appendNextButton(){
+			this.nextButton = window.document.createElement('button');
+			this.setButtonStyle(this.nextButton, 'Next');
+			this.nextButton.style.right = 0;
+			this.nextButton.onclick = () => {
+				this.setText('Next');
+			}
+			this.block.appendChild(this.nextButton);
+		}
+		appendSkipButton(){
+			this.skipButton = window.document.createElement('button');
+			this.setButtonStyle(this.skipButton, 'Skip');
+			this.skipButton.style.left = 0;
+			this.skipButton.onclick = () => {
+				this.setText('Skip');
+			}
+			this.block.appendChild(this.skipButton);			
+		}
+		setButtonStyle(button, title){
+			button.style.position = 'absolute';
+			button.style.bottom = 0;
+			button.style.backgroundColor = '#8babbf';
+			button.style.color = '#38002c';
+			button.innerText = title;
+			button.style.fontSize = '20pt';
+			button.style.margin = '10pt';
+			button.style.padding = '10pt';
+			button.style.border = 'none';
+			button.style.fontFamily = "'Press Start 2P', cursive";
+		}
+		setText(text){
+			this.p.innerText = text;
+		}
+	}
 	class Enemy {
 
 		ATTACK = 'attack';
@@ -992,6 +1063,7 @@
 		lifeCycle();
 		addHearts();
 		updateHearts();
+		let cutscene = new Cutscene('hello world');
 	}
 	start();
 </script>
