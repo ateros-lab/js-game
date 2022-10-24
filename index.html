@@ -119,6 +119,8 @@
 	let x = 0;
 	let halfWidth = window.screen.width / 2;
 	let tileArray = [];
+	let objectsArray = [];
+	let enemiesArray = [];
 	let maxLives = 6;
 	let lives = 6;
 	let heartsArray = [];
@@ -158,6 +160,24 @@
 
 	//ФУНКЦИИ
 
+	const moveWorldLeft = () => {
+		objectsArray.map((elem, index)=>{
+			elem.style.left = Number.parseInt(elem.style.left) - 32;
+		});
+		tileArray.map(elem => {
+			elem[0] = elem[0] - 1;
+		});
+		enemiesArray.map(elem => elem.moveLeft());
+	}
+	const moveWorldRight = () => {
+		objectsArray.map((elem, index)=>{
+			elem.style.left = Number.parseInt(elem.style.left) + 32;
+		});
+		tileArray.map(elem => {
+			elem[0] = elem[0] + 1;
+		});
+		enemiesArray.map(elem => elem.moveRight());
+	}
 	const updateHeroXY = () => {
 		heroX = Math.ceil((Number.parseInt(imgBlock.style.left)+32)/32);
 		heroY = Math.ceil(Number.parseInt(imgBlock.style.bottom)/32);
@@ -199,7 +219,8 @@
 			imgBlock.style.left = `${imgBlockPosition * 20}px`;
 			
 			checkFalling();       
-			wasHeroHit = false;   
+			wasHeroHit = false; 
+			moveWorldLeft();  
 		}
 	}
 	const leftHandler = () => {
@@ -216,6 +237,7 @@
 
 			checkFalling();   
 			wasHeroHit = false;
+			moveWorldRight();
 		}										
 	}	
 	const standHanlder = () => {
@@ -347,8 +369,17 @@
 		tile.style.left = x*32;
 		tile.style.bottom = y*32;
 		backgroundCanvas.appendChild(tile);	
-
+		objectsArray.push(tile);
 		tileArray.push([x, y]);
+	}
+	const createTileBlack = (x, y = 0) => {
+		let tileBlack = window.document.createElement('img');
+		tileBlack.src = 'assets/1 Tiles/Tile_04.png';
+		tileBlack.style.position = 'absolute';
+		tileBlack.style.left = x*32;
+		tileBlack.style.bottom = y*32;	
+		backgroundCanvas.appendChild(tileBlack);
+		objectsArray.push(tileBlack);
 	}
 	const createTilesPlatform = (startX, startY, length) => {
 		for (let i = 0; i < length; i++) {
@@ -357,12 +388,7 @@
 	}
 	const addTiles = (i) => {
 		createTile(i);
-		let tileBlack = window.document.createElement('img');
-		tileBlack.src = 'assets/1 Tiles/Tile_04.png';
-		tileBlack.style.position = 'absolute';
-		tileBlack.style.left = i*32;
-		tileBlack.style.bottom = 0;	
-		backgroundCanvas.appendChild(tileBlack);
+		createTileBlack(i);
 	}
 
 	class Enemy {
@@ -408,7 +434,7 @@
 			this.createImg();
 
 			this.changeAnimate(this.WALK);
-
+			enemiesArray.push(this);
 			this.lifeCycle();
 		}
 		createImg(){
@@ -484,11 +510,13 @@
 				}
 				if(this.state === this.HURT){
 					this.changeAnimate(this.ATTACK);
+					if(this.dir > 0) this.spritePos = 1;
 				}
 				if(this.state === this.DEATH){
 					clearInterval(this.timer);
 					isRightSideBlocked = false;
 					isLeftSideBlocked = false;
+					if(this.dir > 0) this.spritePos = 5;
 				}
 			}
 			this.img.style.left = -(this.spritePos * this.blockSize);
@@ -583,6 +611,14 @@
 				pos++;
 			}, 100);
 			canvas.appendChild(text);
+		}
+		moveRight(){
+			this.startX += 1;
+			this.posX += 1;
+		}
+		moveLeft(){
+			this.startX -= 1;
+			this.posX -= 1;
 		}
 	}
 	class Heart {
