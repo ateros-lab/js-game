@@ -366,6 +366,7 @@
 		spriteMaxPos;
 		timer;
 		dir;
+		stop;
 
 		sourcePath;
 		constructor(x, y){
@@ -376,7 +377,8 @@
 			this.spritePos = 0;
 			this.spriteMaxPos = 3;
 			this.sourcePath = 'assets/Enemies/1/';
-			this.dir = 0.5;
+			this.dir = 1;
+			this.stop = false;
 
 			this.state = this.IDLE;
 			this.animateWasChanged = false;
@@ -438,7 +440,12 @@
 				}
 
 				this.spritePos++;
-				this.move();
+				this.checkCollide();
+				if(!this.stop){
+					this.move();
+				} else {
+					this.changeAnimate(this.ATTACK);
+				}
 				this.animate();
 			}, 150);
 		}
@@ -482,6 +489,23 @@
 			}
 			this.posX += this.dir;
 			this.block.style.left = this.posX * 32;
+		}
+		checkCollide(){
+			if(heroY == this.posY){
+				if(heroX == this.posX){
+					// attack left side
+					this.stop = true;
+				} else if(heroX == (this.posX + 2)){
+					// attack right side
+					this.stop = true;
+				} else {
+					this.stop = false;
+					this.changeAnimate(this.WALK);
+				}
+			} else {
+				this.stop = false;
+				this.changeAnimate(this.WALK);
+			}
 		}
 	}
 
