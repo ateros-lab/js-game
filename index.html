@@ -453,6 +453,52 @@
 		createTileBlack(i);
 	}
 	
+	class Lever {
+		leverImg;
+		x;
+		y;
+		updateTimer;
+		dir;
+		opacity;
+		constructor(){
+			this.x = heroX - 20;
+			this.y = heroY;
+			this.leverImg = window.document.createElement('img');
+			this.leverImg.src = 'assets/lever.png';
+			this.leverImg.style.position = 'absolute';
+			this.leverImg.style.left = this.x * 32;
+			this.leverImg.style.bottom = this.y * 32;
+			this.leverImg.style.width = 64;
+			this.leverImg.style.height = 64;
+			canvas.appendChild(this.leverImg);
+			enemiesArray.push(this);
+
+			this.dir = true;
+			this.opacity = 1;
+			this.updateTimer = setInterval(()=>{
+				if(heroX === this.x + 1 && heroY === this.y){
+					this.leverImg.style.display = 'none';
+					clearInterval(this.updateTimer);
+					new Cutscene(['Скорее беги к фонтану!']);
+				}else{
+					this.animate();
+				}
+			}, 100);
+		}
+		animate(){
+			(this.dir) ? this.opacity += 0.5 : this.opacity -= 0.5;
+			this.leverImg.style.opacity = 1/this.opacity;
+			if(this.opacity <= 0 || this.opacity >= 5) this.dir = !this.dir;
+		}
+		moveLeft(){
+			this.leverImg.style.left = Number.parseInt(this.leverImg.style.left) - 32;
+			this.x -= 1;
+		}
+		moveRight(){
+			this.leverImg.style.left = Number.parseInt(this.leverImg.style.left) + 32;
+			this.x += 1;
+		}
+	}
 	class Cutscene {
 		text;
 		block;
@@ -578,7 +624,9 @@
 
 		sourcePath;
 		message;
-		constructor(x, y, src, message = ''){
+		isLast;
+		constructor(x, y, src, message = '', isLast = false){
+			this.isLast = isLast;
 			this.message = message;
 			this.posX = x + this.getRandomOffset(6);
 			this.startX = x;
@@ -680,7 +728,12 @@
 					isRightSideBlocked = false;
 					isLeftSideBlocked = false;
 					if(this.dir > 0) this.spritePos = 5;
-					if(this.message) new Cutscene([this.message]);
+					if(this.message) {
+						new Cutscene([this.message]);
+						if(this.isLast){
+							new Lever();
+						}
+					}
 				}
 			}
 			this.img.style.left = -(this.spritePos * this.blockSize);
@@ -801,8 +854,8 @@
 		}
 	}
 	class Enemy2 extends Enemy {
-		constructor(x, y, mess){
-			super(x, y, 'assets/Enemies/2/', mess);
+		constructor(x, y, mess, isLast){
+			super(x, y, 'assets/Enemies/2/', mess, isLast);
 		}
 		setAttack(){
 			this.img.src = this.sourcePath + 'Attack.png';
@@ -1057,7 +1110,7 @@
 		let enemy4 = new Enemy2(65, 5);
 		let enemy5 = new Enemy1(79, 1, 'Третья цифра пароля - "2"');
 		let enemy6 = new Enemy6(93, 5);
-		let enemy7 = new Enemy2(100, 9, 'Последняя цифра пароля - "3".\n\nСкорее ищи рычаг, у тебя 15 секунд!');
+		let enemy7 = new Enemy2(100, 9, 'Последняя цифра пароля - "3".\n\nСкорее ищи рычаг, у тебя 15 секунд!', true);
 	}
 	const buildLevel = () => {
 		let floor1 = 0;
