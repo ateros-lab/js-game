@@ -4,6 +4,15 @@
 	<div id="background-canvas">
 
 	</div>
+	<div id="final-timer-canvas">
+		<p id="final-timer-text" style="
+			position: absolute;
+			font-family: 'Bungee Spice', cursive;
+			font-size: 100pt;
+			text-align: center;
+			width: 100%;
+		"></p>
+	</div>
 	<img src="fullscreen.png" id="fsBtn" style="
 		width: 40px;
 		height: 40px;
@@ -137,6 +146,7 @@
 	let fsBtn = window.document.querySelector('#fsBtn');
 	let info = window.document.querySelector('#info');
 	let backgroundCanvas = window.document.querySelector('#background-canvas');
+	let finalTimerText = window.document.querySelector('#final-timer-text');
 
 	let heroX = Math.floor((Number.parseInt(imgBlock.style.left)+32)/32);
 	let heroY = Math.floor(Number.parseInt(imgBlock.style.bottom)/32);
@@ -458,9 +468,13 @@
 		x;
 		y;
 		updateTimer;
+		finalTimer;
+		time;
 		dir;
 		opacity;
+		fountainImg;
 		constructor(){
+			this.fountainImg = objectsArray.filter(elem => elem.outerHTML.split('"')[1] === 'assets/3 Objects/Fountain/2.png')[0];
 			this.x = heroX - 20;
 			this.y = heroY;
 			this.leverImg = window.document.createElement('img');
@@ -473,6 +487,7 @@
 			canvas.appendChild(this.leverImg);
 			enemiesArray.push(this);
 
+			this.time = 15;
 			this.dir = true;
 			this.opacity = 1;
 			this.updateTimer = setInterval(()=>{
@@ -484,6 +499,19 @@
 					this.animate();
 				}
 			}, 100);
+			this.finalTimer = setInterval(()=>{
+				if(this.time <= 0){
+					finalTimerText.innerText = 'Game over';
+					clearInterval(this.finalTimer);
+				}else{
+					finalTimerText.innerText = `${this.time}`;
+					this.time--;
+					if(heroX === Number.parseInt(this.fountainImg.style.left)/32){
+						clearInterval(this.finalTimer);
+						finalTimerText.innerText = 'Win';
+					}					
+				}
+			}, 1000);
 		}
 		animate(){
 			(this.dir) ? this.opacity += 0.5 : this.opacity -= 0.5;
@@ -1096,7 +1124,7 @@
 		createImgEl(basePath + '/Bushes/17.png', 100, f2);
 		createImgEl(basePath + '/Bushes/17.png', 13, f3);
 		//Fountain
-		createImgEl(basePath + '/Fountain/2.png', 116, f1);
+		createImgEl(basePath + 'Fountain/2.png', 116, f1);
 		//Box
 		createImgEl(basePath + '/Other/Box.png', 84, f1);
 		createImgEl(basePath + '/Other/Box.png', 48, f2);
