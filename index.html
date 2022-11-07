@@ -507,8 +507,8 @@
 					finalTimerText.innerText = `${this.time}`;
 					this.time--;
 					if(heroX === Number.parseInt(this.fountainImg.style.left)/32){
+						new Terminal();
 						clearInterval(this.finalTimer);
-						finalTimerText.innerText = 'Win';
 					}					
 				}
 			}, 1000);
@@ -624,6 +624,75 @@
 				}
 			},20);
 			// this.p.innerText = text;
+		}
+	}
+	class Terminal extends Cutscene {
+		btnBlock;
+		mainStrLength;
+		password;
+		constructor(){
+			let text = 'Скорее вводи пароль :';
+			super([text]);
+			this.password = '1123';
+			this.mainStrLength = text.length;
+			this.btnBlock = window.document.createElement('div');
+			this.btnBlock.style.position = 'absolute';
+			this.btnBlock.style.left = '33%';
+			this.btnBlock.style.bottom = '10vh';
+			this.btnBlock.style.width = '33%';
+			this.block.appendChild(this.btnBlock);
+			this.skipButton.innerText = 'Clear';
+			this.nextButton.innerText = 'Enter';
+			this.createNumButtons();
+			this.skipButton.onclick = () => {
+				if(this.p.innerText.length > this.mainStrLength){
+					let str = '';
+					for(let i = 0; i < this.p.innerText.length - 1; i++){
+						str += this.p.innerText[i];
+					}
+					this.p.innerText = str;
+				}
+			}
+			this.nextButton.onclick = () => {
+				if(this.p.innerText.length === this.mainStrLength + 4){
+					let str = '';
+					for(let i = this.p.innerText.length - 4; i < this.p.innerText.length; i++){
+						str += this.p.innerText[i];
+					}
+					if(str === this.password){
+						this.p.innerText = 'Пароль верный!';
+					}else{
+						this.p.innerText = 'Пароль неверный, попробуй еще раз :';
+						this.mainStrLength = this.p.innerText.length;
+					}
+				}
+			}
+		}
+		createNumButtons(){
+			for(let i = 1; i <= 9; i++){
+				let btn = window.document.createElement('button');
+				this.setButtonStyle(btn, `${i}`);
+				btn.style.left = 
+					(i <= 3)
+						? `${(i - 1)*33}%`
+						: (i <= 6)
+							? `${(i - 4)*33}%`
+							: `${(i - 7)*33}%`
+				;
+				btn.style.bottom = 
+					(i <= 3)
+						? '36vh'
+						: (i <= 6)
+							? '18vh'
+							: 0
+				;
+				btn.onclick = (event) => {
+					if(this.p.innerText.length < this.mainStrLength + 4){
+						this.p.innerText += event.target.innerText;
+					}
+				}
+				this.btnBlock.appendChild(btn);
+			}
 		}
 	}
 	class Enemy {
@@ -1177,6 +1246,7 @@
 		lifeCycle();
 		addHearts();
 		updateHearts();
+		// new Terminal();
 		// let cutscene = new Cutscene([
 		// 	'После неудачной попытки выследить похитетелей своей девушки, Адам был пойман недображелателями.\n\nОни решили протестировать на герое недавно украденную сверхсекретную разработку. В результате - сознание Адама было заключено в виртуальный плен.\n\nВсе это время друзья героя искали его и спустя несколько дней, наконец-то смогли выйти с ним на связь.',
 		// 	'Оказалось, что из виртуального мира можно сбежать - дверь находиться за одним из фонтанов в конце первого уровня. Но, чтобы ее открыть нужно найти спрятанный рычаг и ввести код пароля. \n\nПароль состоит из 4 чисел. Цифры пароля находятся внутри тщательно охраняемых деревянных ящиков (по одной в каждом).\n\nЧто касается рычага - он спрятан на втором уровне, куда у Адама нет доступа.',
