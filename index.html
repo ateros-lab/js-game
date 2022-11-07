@@ -13,6 +13,13 @@
 			width: 100%;
 		"></p>
 	</div>
+	<img src="assets/refresh.png" id="restartBtn" style="
+		width: 40px;
+		height: 40px;
+		position: absolute;
+		top: 20px;
+		right: 80px;
+	" />	
 	<img src="fullscreen.png" id="fsBtn" style="
 		width: 40px;
 		height: 40px;
@@ -147,6 +154,7 @@
 	let info = window.document.querySelector('#info');
 	let backgroundCanvas = window.document.querySelector('#background-canvas');
 	let finalTimerText = window.document.querySelector('#final-timer-text');
+	let restartBtn = window.document.querySelector('#restartBtn');
 
 	let heroX = Math.floor((Number.parseInt(imgBlock.style.left)+32)/32);
 	let heroY = Math.floor(Number.parseInt(imgBlock.style.bottom)/32);
@@ -166,6 +174,10 @@
 			canvas.requestFullscreen();
 		}
 	}
+	restartBtn.addEventListener('click', ()=>{
+		window.document.location.reload();
+	});
+
 	jumpBlock.onclick = () => {jump = true};
 	hitBlock.onclick = () => {hit = true};
 
@@ -660,7 +672,9 @@
 						str += this.p.innerText[i];
 					}
 					if(str === this.password){
-						this.p.innerText = 'Пароль верный!';
+						this.block.style.display = 'none';
+						finalTimerText.innerText = 'You win!';
+						imgBlock.style.display = 'none';
 					}else{
 						this.p.innerText = 'Пароль неверный, попробуй еще раз :';
 						this.mainStrLength = this.p.innerText.length;
@@ -1240,18 +1254,47 @@
 
 		addEnemies();
 	}
+	const addStartScreen = () => {
+		//#38002c - фон
+		//#8babbf - текст		
+		let div = window.document.createElement('div');
+		div.style.position = 'absolute';
+		div.style.left = 0;
+		div.style.bottom = 0;
+		div.style.width = '100%';
+		div.style.height = '100vh';
+		div.style.backgroundColor = '#38002c';
+		div.style.display = 'grid';
+		div.style.alignItems = 'center';
+		div.style.justifyContent = 'center';
+		canvas.appendChild(div);
+		let btn = window.document.createElement('button');
+		btn.innerText = 'PLAY';
+		btn.style.fontFamily = "'Press Start 2P', cursive";
+		btn.style.fontSize = '30pt';
+		btn.style.backgroundColor = '#8babbf';
+		btn.style.color = '#38002c';
+		btn.style.padding = '20pt 30pt';
+		btn.style.border = 'none';
+		btn.addEventListener('click', () => {
+			div.style.display = 'none';
+			fsBtn.src = 'cancel.png';
+			canvas.requestFullscreen();	
+			let cutscene = new Cutscene([
+				'После неудачной попытки выследить похитетелей своей девушки, Адам был пойман недображелателями.\n\nОни решили протестировать на герое недавно украденную сверхсекретную разработку. В результате - сознание Адама было заключено в виртуальный плен.\n\nВсе это время друзья героя искали его и спустя несколько дней, наконец-то смогли выйти с ним на связь.',
+				'Оказалось, что из виртуального мира можно сбежать - дверь находиться за одним из фонтанов в конце первого уровня. Но, чтобы ее открыть нужно найти спрятанный рычаг и ввести код пароля. \n\nПароль состоит из 4 чисел. Цифры пароля находятся внутри тщательно охраняемых деревянных ящиков (по одной в каждом).\n\nЧто касается рычага - он спрятан на втором уровне, куда у Адама нет доступа.',
+				'К счастью друзья нашли способ похитить его. Но, поскольку опасность слышком велика, они передадут рычаг, только когда станут известны все цифры пароля.\n\nКогда появится рычаг у Адама будет 15 секунд чтобы найти его, подбежать к фонтану и ввести пароль. Если герой не успеет - местонохождение его друзей будет обнаружено недоброжелателями.',
+			]);					
+		});
+		div.appendChild(btn);
+	}
 	const start = () => {
 		addBackgroundImages();
 		buildLevel();
 		lifeCycle();
 		addHearts();
 		updateHearts();
-		// new Terminal();
-		// let cutscene = new Cutscene([
-		// 	'После неудачной попытки выследить похитетелей своей девушки, Адам был пойман недображелателями.\n\nОни решили протестировать на герое недавно украденную сверхсекретную разработку. В результате - сознание Адама было заключено в виртуальный плен.\n\nВсе это время друзья героя искали его и спустя несколько дней, наконец-то смогли выйти с ним на связь.',
-		// 	'Оказалось, что из виртуального мира можно сбежать - дверь находиться за одним из фонтанов в конце первого уровня. Но, чтобы ее открыть нужно найти спрятанный рычаг и ввести код пароля. \n\nПароль состоит из 4 чисел. Цифры пароля находятся внутри тщательно охраняемых деревянных ящиков (по одной в каждом).\n\nЧто касается рычага - он спрятан на втором уровне, куда у Адама нет доступа.',
-		// 	'К счастью друзья нашли способ похитить его. Но, поскольку опасность слышком велика, они передадут рычаг, только когда станут известны все цифры пароля.\n\nКогда появится рычаг у Адама будет 15 секунд чтобы найти его, подбежать к фонтану и ввести пароль. Если герой не успеет - местонохождение его друзей будет обнаружено недоброжелателями.',
-		// ]);
+		addStartScreen();
 	}
 	start();
 </script>
